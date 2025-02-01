@@ -32,7 +32,12 @@ pipeline {
         }
         stage('run container') {
             steps {
-                bat 'docker run -d --name java-app %IMAGE_NAME%'
+                script {
+                    bat '''
+                    docker ps -a -q -f "name=java-app" | xargs -r docker rm -f
+                    '''
+                    bat 'docker run -d --name java-app %IMAGE_NAME%'
+                }   
             }
         }
     }
