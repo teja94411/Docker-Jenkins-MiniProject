@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     bat '''
-                    docker ps -a -q -f "name=java-app" | xargs -r docker rm -f
+                    for /f "tokens=*" %%i in ('docker ps -a -q -f "name=java-app"') do docker rm -f %%i
                     '''
                     bat 'docker run -d --name java-app %IMAGE_NAME%'
                 }   
