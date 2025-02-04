@@ -12,7 +12,8 @@ pipeline {
         }
         stage('build docker image') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat 'docker build -t %IMAGE_NAME% .' // For Windows
+                # sh './build_docker_image.sh' // For ShellScript
             }
         }
         stage('login to docker hub') {
@@ -20,23 +21,23 @@ pipeline {
                 script {
                     // Correct usage of withDockerRegistry with a body to handle login
                     withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID]) {
-                        bat 'docker login'
+                        bat 'docker login' // For Windows
+                        # sh 'docker login' // For ShellScript
                     }
                 }
             }
         }
         stage('push image') {
             steps {
-                bat 'docker push %IMAGE_NAME%'
+                bat 'docker push %IMAGE_NAME%' // For Windows
+                # sh 'docker push ${IMAGE_NAME}' // For ShellScript
             }
         }
         stage('run container') {
             steps {
                 script {
-                    bat '''
-                    for /f "tokens=*" %%i in ('docker ps -a -q -f "name=java-app"') do docker rm -f %%i
-                    '''
-                    bat 'docker run -d --name java-app %IMAGE_NAME%'
+                    bat 'docker run %IMAGE_NAME%' // For Windows
+                   # sh 'docker run ${IMAGE_NAME}' // For ShellScript
                 }   
             }
         }
