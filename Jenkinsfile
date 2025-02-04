@@ -65,7 +65,7 @@ pipeline {
                         sh "docker run ${IMAGE_NAME}"
                     } else {
                         // For Windows-based systems
-                        bat "docker run %IMAGE_NAME%"
+                        bat "docker run -d %IMAGE_NAME%"
                     }
                 }
             }
