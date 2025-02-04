@@ -1,7 +1,7 @@
 FROM openjdk:17
 WORKDIR /app
 COPY . /app 
-RUN javac App.java
+RUN javac Docker_Jenkins/App.java
 CMD ["java","App"]
 
 
