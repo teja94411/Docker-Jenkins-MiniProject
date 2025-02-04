@@ -10,35 +10,64 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/teja94411/Maven-Project']])
             }
         }
-        stage('build docker image') {
-            steps {
-                bat 'docker build -t %IMAGE_NAME% .' // For Windows
-                # sh './build_docker_image.sh' // For ShellScript
-            }
-        }
-        stage('login to docker hub') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Correct usage of withDockerRegistry with a body to handle login
-                    withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID]) {
-                        bat 'docker login' // For Windows
-                        # sh 'docker login' // For ShellScript
+                    if (isUnix()) {
+                        // For Unix-based systems (Linux/macOS)
+                        sh 'docker build -t $IMAGE_NAME .'
+
+                    } else {
+                        // For Windows-based systems
+                        bat "docker build -t %IMAGE_NAME% ."
                     }
                 }
             }
         }
-        stage('push image') {
-            steps {
-                bat 'docker push %IMAGE_NAME%' // For Windows
-                # sh 'docker push ${IMAGE_NAME}' // For ShellScript
-            }
-        }
-        stage('run container') {
+        
+        stage('Login to Docker Hub') {
             steps {
                 script {
-                    bat 'docker run %IMAGE_NAME%' // For Windows
-                   # sh 'docker run ${IMAGE_NAME}' // For ShellScript
-                }   
+                    if (isUnix()) {
+                        // For Unix-based systems (Linux/macOS)
+                        withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID]) {
+                            sh 'docker login'
+                        }
+                    } else {
+                        // For Windows-based systems
+                        withDockerRegistry([credentialsId: DOCKER_CREDENTIALS_ID]) {
+                            bat 'docker login'
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Push Image') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        // For Unix-based systems (Linux/macOS)
+                        sh "docker push ${IMAGE_NAME}"
+                    } else {
+                        // For Windows-based systems
+                        bat "docker push %IMAGE_NAME%"
+                    }
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        // For Unix-based systems (Linux/macOS)
+                        sh "docker run ${IMAGE_NAME}"
+                    } else {
+                        // For Windows-based systems
+                        bat "docker run %IMAGE_NAME%"
+                    }
+                }
             }
         }
     }
