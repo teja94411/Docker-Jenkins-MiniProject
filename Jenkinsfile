@@ -2,7 +2,7 @@ pipeline {
     agent any 
         environment{
             DOCKER_CREDENTIALS_ID = 'docker-container-hub-cred'
-            IMAGE_NAME = 'java-app'
+            IMAGE_NAME = 'tejaroyal/java-app'
         }
     stages {
         stage('checkout') {
