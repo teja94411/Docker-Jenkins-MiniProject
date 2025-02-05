@@ -10,13 +10,6 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/teja94411/Docker-Jenkins-MiniProject']])
             }
         }
-        stage('Build Maven') {
-            steps {
-                script{
-                    sh "mvn clean install"
-                }
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
